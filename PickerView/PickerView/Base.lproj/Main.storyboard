@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="a46-A7-d00"/>
+                        <viewControllerLayoutGuide type="bottom" id="Kc7-Jn-Kf9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" tag="10" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wo9-fi-ypw">
+                                <rect key="frame" x="105" y="188" width="164" height="39"/>
+                                <color key="backgroundColor" red="0.14901960780000001" green="0.67450980390000004" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="39" id="IFu-SH-ReQ"/>
+                                </constraints>
+                                <state key="normal" title="开始时间"/>
+                                <connections>
+                                    <action selector="clickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="yHl-Tm-f1b"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="11" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="whc-nW-FY5">
+                                <rect key="frame" x="105" y="269" width="164" height="39"/>
+                                <color key="backgroundColor" red="0.14901960780000001" green="0.67450980390000004" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="164" id="40F-Ww-NhO"/>
+                                    <constraint firstAttribute="height" constant="39" id="47g-uj-aop"/>
+                                </constraints>
+                                <state key="normal" title="结束时间"/>
+                                <connections>
+                                    <action selector="clickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="EnG-1Z-TOu"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" tag="12" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WWZ-aR-rGA">
+                                <rect key="frame" x="106" y="347" width="164" height="39"/>
+                                <color key="backgroundColor" red="0.14901960780000001" green="0.67450980390000004" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="164" id="5b0-RQ-Lj7"/>
+                                    <constraint firstAttribute="height" constant="39" id="CrQ-2D-kRq"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="164" id="jpf-1K-Z4L"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="39" id="x5a-5I-0p8"/>
+                                </constraints>
+                                <state key="normal" title="频率"/>
+                                <connections>
+                                    <action selector="clickAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zgC-GS-9p3"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="Wo9-fi-ypw" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="whc-nW-FY5" secondAttribute="trailing" id="4jm-0W-x8W"/>
+                            <constraint firstItem="WWZ-aR-rGA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="BGv-9K-4iR"/>
+                            <constraint firstItem="Wo9-fi-ypw" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="whc-nW-FY5" secondAttribute="leading" id="Iwb-QG-ECH"/>
+                            <constraint firstItem="whc-nW-FY5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="R7W-3b-tr2"/>
+                            <constraint firstItem="Wo9-fi-ypw" firstAttribute="top" secondItem="a46-A7-d00" secondAttribute="bottom" constant="168" id="RRl-Z4-Nm2"/>
+                            <constraint firstItem="whc-nW-FY5" firstAttribute="top" secondItem="Wo9-fi-ypw" secondAttribute="bottom" constant="42" id="crB-3p-hwu"/>
+                            <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="Wo9-fi-ypw" secondAttribute="trailing" id="oh7-gF-WUo"/>
+                            <constraint firstItem="Wo9-fi-ypw" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="ru9-sr-QJo"/>
+                            <constraint firstItem="WWZ-aR-rGA" firstAttribute="top" secondItem="whc-nW-FY5" secondAttribute="bottom" constant="39" id="sLh-Ft-oe0"/>
+                            <constraint firstItem="Wo9-fi-ypw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="vz0-bF-Sai"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="endButon" destination="whc-nW-FY5" id="EX5-Mx-aKT"/>
+                        <outlet property="frequencyBtn" destination="WWZ-aR-rGA" id="sES-jP-7Zc"/>
+                        <outlet property="starBtn" destination="Wo9-fi-ypw" id="hzm-fG-N1N"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="20.5" y="35.5"/>
+        </scene>
+    </scenes>
+</document>
