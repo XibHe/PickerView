@@ -32,10 +32,12 @@
     datePickerView.delegate = self;
     
     switch (sender.tag) {
-        case 12:
+        case 10:
         {//开始时间
-            datePickerView.pickerType = PickerType_frequency;
-            datePickerView.pickerMode = -1;
+            datePickerView.pickerType = PickerType_pruductDate;
+            datePickerView.pickerMode = UIDatePickerModeDate;
+            datePickerView.isCheckDate = YES;
+            datePickerView.CheckDate = self.checkDate;
         }
             break;
         case 11:
@@ -44,12 +46,15 @@
             datePickerView.pickerMode = UIDatePickerModeDate;
         }
             break;
-        case 10:
+        case 12:
         {// 频率
-            datePickerView.pickerType = PickerType_pruductDate;
-            datePickerView.pickerMode = UIDatePickerModeDate;
-            datePickerView.isCheckDate = YES;
-            datePickerView.CheckDate = self.checkDate;
+            datePickerView.pickerType = PickerType_frequency;
+            datePickerView.pickerMode = -1;
+        }
+            break;
+        case 13:
+        {// 自定义日期样式
+
         }
             break;
         default:

@@ -18,6 +18,7 @@
 		4785772620A1904000F8DA07 /* PickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4785772520A1903F00F8DA07 /* PickerView.m */; };
 		4785772A20A1A15100F8DA07 /* frequency.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4785772920A1A15000F8DA07 /* frequency.plist */; };
 		4785772D20A1A53C00F8DA07 /* DateRateTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 4785772C20A1A53C00F8DA07 /* DateRateTransform.m */; };
+		47A6CE2820FB9CED0064BB76 /* NSDate+YN.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A6CE2620FB9CEC0064BB76 /* NSDate+YN.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,8 @@
 		4785772920A1A15000F8DA07 /* frequency.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = frequency.plist; sourceTree = "<group>"; };
 		4785772B20A1A53B00F8DA07 /* DateRateTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateRateTransform.h; sourceTree = "<group>"; };
 		4785772C20A1A53C00F8DA07 /* DateRateTransform.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateRateTransform.m; sourceTree = "<group>"; };
+		47A6CE2620FB9CEC0064BB76 /* NSDate+YN.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+YN.m"; sourceTree = "<group>"; };
+		47A6CE2720FB9CEC0064BB76 /* NSDate+YN.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+YN.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +112,8 @@
 		478576F020A1884000F8DA07 /* PickerView */ = {
 			isa = PBXGroup;
 			children = (
+				47A6CE2720FB9CEC0064BB76 /* NSDate+YN.h */,
+				47A6CE2620FB9CEC0064BB76 /* NSDate+YN.m */,
 				4785772320A1903F00F8DA07 /* PickerView */,
 				478576F120A1884000F8DA07 /* AppDelegate.h */,
 				478576F220A1884000F8DA07 /* AppDelegate.m */,
@@ -285,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4785772D20A1A53C00F8DA07 /* DateRateTransform.m in Sources */,
+				47A6CE2820FB9CED0064BB76 /* NSDate+YN.m in Sources */,
 				4785772620A1904000F8DA07 /* PickerView.m in Sources */,
 				478576F620A1884000F8DA07 /* ViewController.m in Sources */,
 				4785770120A1884300F8DA07 /* main.m in Sources */,
