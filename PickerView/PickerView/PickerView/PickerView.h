@@ -15,7 +15,8 @@ typedef enum
     PickerType_endDate          = 1,     // 结束提醒日期
     PickerType_frequency        = 2,     // 频率选择器
     PickerType_warrantyDate     = 3,     // 过保日期
-    PickerType_AnyDate          = 4      // 任意日期
+    PickerType_AnyDate          = 4,      // 任意日期
+    PickerType_DateAndMeridiem  = 5      // 日期 + AM/PM
     
 }PickerType;
 

@@ -54,7 +54,7 @@
             break;
         case 13:
         {// 自定义日期样式
-
+            datePickerView.pickerType = PickerType_DateAndMeridiem;
         }
             break;
         default:
