@@ -33,16 +33,18 @@
     
     switch (sender.tag) {
         case 10:
-        {//开始时间
-            datePickerView.pickerType = PickerType_pruductDate;
-            datePickerView.pickerMode = UIDatePickerModeDate;
-            datePickerView.isCheckDate = YES;
-            datePickerView.CheckDate = self.checkDate;
+        {//请假时间
+            datePickerView.pickerType = PickerType_leaveDate;
+            datePickerView.pickerMode = UIDatePickerModeDateAndTime;
+            datePickerView.minuteInterval = 10;
+//            datePickerView.pickerMode = UIDatePickerModeDate;
+//            datePickerView.isCheckDate = YES;
+//            datePickerView.CheckDate = self.checkDate;
         }
             break;
         case 11:
         {// 结束时间
-            datePickerView.pickerType = PickerType_AnyDate;
+            datePickerView.pickerType = PickerType_endDate;
             datePickerView.pickerMode = UIDatePickerModeDate;
         }
             break;

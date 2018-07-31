@@ -26,7 +26,9 @@
 @property (copy, nonatomic) NSString *strYear;      //  年
 @property (copy, nonatomic) NSString *strMonth;     //  月
 @property (copy, nonatomic) NSString *strDay;       //  日
+@property (nonatomic, copy) NSString *strMeridiem;  // AM/PM
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
+@property (nonatomic, copy) NSString *dateAndMeridiemString;  // 处理后回传的 日期+AM/PM
 @end
 
 @implementation PickerView
@@ -51,84 +53,58 @@
 - (void)assignTheNecessaryValue
 {
     NSDateFormatter  *dateformatter=[[NSDateFormatter alloc] init];
-    
     //获得系统时间和日期
     NSDate *  senddate=[NSDate date];
-    
     if (_pickerType == PickerType_AnyDate && _pickerMode == UIDatePickerModeDate) {
-        
         [dateformatter setDateFormat:@"yyyy-MM-dd"];
-        
         if (self.isCheckDate == YES) {
-            
             _dateString = [dateformatter stringFromDate:self.CheckDate];
-            
             self.pickerDate = self.CheckDate;
-        }
-        else{
-            
+        } else{
             _dateString = [dateformatter stringFromDate:senddate];
-            
             self.pickerDate = senddate;
         }
-        
-    }
-    else if (_pickerMode == UIDatePickerModeTime) {
+    } else if (_pickerMode == UIDatePickerModeTime) {
         [dateformatter setDateFormat:@"HH:mm"];
         //显示已选的日期
         if (self.isCheckDate == YES) {
-            
             //[dateformatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
             _dateString = [dateformatter stringFromDate:self.CheckDate];
             NSLog(@"已选的时间点 = %@",self.CheckDate);
-            
             self.pickerDate = self.CheckDate;
-        }
-        else{
-            
+        } else{
             _dateString = [dateformatter stringFromDate:senddate];
-            
             self.pickerDate = senddate;
         }
-        
-    }
-    else if (_pickerMode == UIDatePickerModeDate){
-        
+    } else if (_pickerMode == UIDatePickerModeDate){
         [dateformatter setDateFormat:@"yyyy-MM-dd"];
         //显示已选的日期
         if (self.isCheckDate == YES) {
-            
             _dateString = [dateformatter stringFromDate:self.CheckDate];
-            
             self.pickerDate = self.CheckDate;
-        }
-        else{
-            
+        } else{
             _dateString = [dateformatter stringFromDate:senddate];
-            
             self.pickerDate = senddate;
         }
-        
-    }
-    else if (_pickerMode == UIDatePickerModeDateAndTime){
-        
+    } else if (_pickerMode == UIDatePickerModeDateAndTime){
         [dateformatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        
         if (self.isCheckDate == YES) {
-            
             _dateString = [dateformatter stringFromDate:self.CheckDate];
-            
             self.pickerDate = self.CheckDate;
+        } else{
+            if (_minuteInterval == 10) {
+                // 当分钟的间隔为 10 时，将分钟取整。eg. 08:13 取整 为 08:10
+                NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:NSCalendarUnitMinute fromDate:senddate];
+                NSInteger minutes = [dateComponents minute];
+                NSInteger minutesRounded = ( (NSInteger)(minutes / 10) ) * 10;
+                NSDate *roundedDate = [[NSDate alloc] initWithTimeInterval:60.0 * (minutesRounded - minutes) sinceDate:senddate];
+                _dateString = [dateformatter stringFromDate:roundedDate];
+                self.pickerDate = roundedDate;
+            } else {
+                _dateString = [dateformatter stringFromDate:senddate];
+                self.pickerDate = senddate;
+            }
         }
-        else{
-            
-            _dateString = [dateformatter stringFromDate:senddate];
-            
-            self.pickerDate = senddate;
-        }
-    } else if (_pickerType == PickerType_DateAndMeridiem) {
-        // 日期 + AM/PM
-        
     }
 }
 
@@ -143,8 +119,7 @@
         // 日期 + AM/PM
         [self createPickerView];
         [self addSubview:_pickerView];
-    }
-    else{
+    } else{
         [self creatDatePickerView];
         [self addSubview:_datePickerView];
     }
@@ -181,7 +156,6 @@
         }
     } completion:^(BOOL finished) {
         [self removeFromSuperview];
-        
     }];
 }
 
@@ -199,7 +173,6 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"frequency" ofType:@"plist"];
         self.frequencyDictionary = [[NSDictionary alloc] initWithContentsOfFile:path];
         self.frequencyArray = @[@"永不",@"每天",@"每周",@"每月",@"每年"];
-        self.rangeArray = [self.frequencyDictionary objectForKey:[self.frequencyArray objectAtIndex:0]];
         
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         //日期 + AM/PM
@@ -243,7 +216,14 @@
         self.strDay = self.arrayDays[indexDay];
         
         self.meridiemArray = @[@"上午",@"下午"];
+        self.strMeridiem = @"上午";
         //[_pickerView selectRow:0 inComponent:3 animated:YES];
+    }
+    
+    // 默认选中已经选中的类型
+    if (self.isCheckDate && self.selectType) {
+        self.dateUnitString = [NSString stringWithFormat:@"%ld",self.selectType];
+        [_pickerView selectRow:_selectType inComponent:0 animated:NO];
     }
 }
 
@@ -252,6 +232,11 @@
     _datePickerView = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, _toolBar.frame.origin.y + _toolBar.frame.size.height, ScreenWidth, 280)];
      [_datePickerView   setTimeZone:[NSTimeZone defaultTimeZone]];
     _datePickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+    
+    // 设置 UIDatePicker 的 minuteInterval
+    if (_pickerMode == UIDatePickerModeDateAndTime && _minuteInterval == 10) {
+        _datePickerView.minuteInterval = 10;
+    }
     
     //滚动datePicker到指定日期,self.CheckDate 可能为空,为空时会崩溃
     if (self.isCheckDate == YES && self.CheckDate) {
@@ -297,7 +282,7 @@
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView*)pickerView
 {
     if (self.pickerType == PickerType_frequency) {
-        return 2;
+        return 1;
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         return 4;
@@ -309,12 +294,7 @@
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     if (self.pickerType == PickerType_frequency) {
-        
-        if (component == 0) {
-            return [self.frequencyArray count];
-        }else{
-            return [self.rangeArray count];
-        }
+        return [self.frequencyArray count];
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -335,11 +315,7 @@
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
     
     if (_pickerType == PickerType_frequency) {
-        if (component == 0) {
-            return [self.frequencyArray objectAtIndex:row];
-        }else{
-            return [self.rangeArray objectAtIndex:row];
-        }
+        return [self.frequencyArray objectAtIndex:row];
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -359,14 +335,8 @@
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     if (self.pickerType == PickerType_frequency) {
-        if (component == 0) {
-            self.rangeArray = [self.frequencyDictionary objectForKey:[self.frequencyArray objectAtIndex:row]];
-            //NSLog(@"self.rangeArray = %@",self.rangeArray);
-        }
-        [pickerView reloadComponent:1];
+        [pickerView reloadComponent:0];
         self.dateUnitString = [NSString stringWithFormat:@"%ld",(long)[_pickerView selectedRowInComponent:0] ];
-        self.dateRateString = [NSString stringWithFormat:@"%ld",(long)[_pickerView selectedRowInComponent:1] ];
-        //NSLog(@"频率选择器控件 = %@,%@",self.dateUnitString,self.dateRateString);
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -376,11 +346,11 @@
         } else if (component == 2){
             self.strDay = self.arrayDays[row];
         } else {
-            
+            self.strMeridiem = self.meridiemArray[row];
         }
         [self updateLabelText];
         
-        if (component != 2) {
+        if (component != 2 && component != 3) {
             NSString *strDate = [NSString stringWithFormat:@"%@%@", self.strYear, self.strMonth];
             [self upDateCurrentAllDaysWithDate:[self.dateFormatter dateFromString:strDate]];
         }
@@ -395,11 +365,10 @@
     
     if (_pickerMode == UIDatePickerModeTime) {
         [dateFormatter setDateFormat:@"HH:mm"];
-    }
-    else if (_pickerMode == UIDatePickerModeDate){
+    } else if (_pickerMode == UIDatePickerModeDate){
         
         [dateFormatter setDateFormat:@"yyyy-MM-dd"];
-        if (_pickerType == PickerType_pruductDate) {
+        if (_pickerType == PickerType_leaveDate) {
             
             _datePickerView.maximumDate = [NSDate date];
             
@@ -407,18 +376,14 @@
             //最小日期
             _datePickerView.minimumDate = [NSDate date];
             _datePickerView.maximumDate = self.maxDate;
-            
-        }else if (_pickerType == PickerType_warrantyDate){
-            
-            _datePickerView.minimumDate = self.minDate;
-            
         }
-        
-    }
-    else if (_pickerType == PickerType_AnyDate){
+    } else if (_pickerType == PickerType_leaveDate) {
         
         [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        _datePickerView.minimumDate = [NSDate date];
+    } else if (_pickerType == PickerType_AnyDate){
         
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     }
     _dateString = [dateFormatter stringFromDate:datePicker.date];
     
@@ -435,9 +400,12 @@
 - (void)makeSureAction
 {
     NSString * paramStr = @"";
-    if (_pickerType == PickerType_AnyDate) // 判断是否是DatePicker
+    if (_pickerType == PickerType_frequency) // 判断是否是DatePicker
     {
-        paramStr = _dateString;
+        paramStr = _dateUnitString;
+    } else if (_pickerType == PickerType_DateAndMeridiem) {
+        // 日期 + AM/PM
+        paramStr = [_dateAndMeridiemString stringByReplacingOccurrencesOfString:@"- " withString:@"-0"];
     }
     else{
         paramStr = _dateString;
@@ -515,7 +483,9 @@
 #pragma mark - 更新当前label的日期
 - (void)updateLabelText
 {
-    NSString *dataString = [NSString stringWithFormat:@"%@年%@月%@日", self.strYear, self.strMonth, self.strDay];
+    //NSString *dataString = [NSString stringWithFormat:@"%@年%@月%@日", self.strYear, self.strMonth, self.strDay];
+    
+    _dateAndMeridiemString = [NSString stringWithFormat:@"%@-%@-%@  %@",[self.strYear stringByReplacingOccurrencesOfString:@"年" withString:@""],[self.strMonth stringByReplacingOccurrencesOfString:@"月" withString:@""],[self.strDay stringByReplacingOccurrencesOfString:@"日" withString:@""],self.strMeridiem];
 }
 
 @end

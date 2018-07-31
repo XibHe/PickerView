@@ -11,12 +11,11 @@
 @protocol PickerViewDelegare;
 typedef enum
 {
-    PickerType_pruductDate      = 0,     // 生产日期
-    PickerType_endDate          = 1,     // 结束提醒日期
+    PickerType_leaveDate        = 0,     // 请假日期
+    PickerType_endDate          = 1,     // 结束日期
     PickerType_frequency        = 2,     // 频率选择器
-    PickerType_warrantyDate     = 3,     // 过保日期
-    PickerType_AnyDate          = 4,      // 任意日期
-    PickerType_DateAndMeridiem  = 5      // 日期 + AM/PM
+    PickerType_AnyDate          = 3,     // 任意日期
+    PickerType_DateAndMeridiem  = 4      // 日期 + AM/PM
     
 }PickerType;
 
@@ -39,7 +38,6 @@ typedef enum
 //自定义频率选择器数据源
 @property (nonatomic, strong) NSDictionary *frequencyDictionary;
 @property (nonatomic ,strong) NSArray *frequencyArray;
-@property (nonatomic ,strong) NSArray *rangeArray;
 @property (nonatomic, copy) NSString *dateUnitString;
 @property (nonatomic, copy) NSString *dateRateString;
 
@@ -47,9 +45,15 @@ typedef enum
 @property (nonatomic, assign) BOOL isCheckDate;
 @property (nonatomic, strong) NSDate *CheckDate;
 
+// 非日期已选中的type值
+@property (nonatomic, assign) NSInteger selectType;
+
 //"到期日"最大不超过的日期
 @property (nonatomic, strong) NSDate * maxDate;     // 最大日期
 @property (nonatomic, strong) NSDate * minDate;     // 最小日期
+
+// minuteInterval
+@property (nonatomic, assign) NSInteger minuteInterval;
 
 - (void)show;
 - (void)remove;
