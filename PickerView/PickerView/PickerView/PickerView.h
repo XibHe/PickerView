@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class PickerView;
 @protocol PickerViewDelegare;
 typedef enum
 {
@@ -19,27 +20,23 @@ typedef enum
     
 }PickerType;
 
+typedef void (^PickerViewBlock)(PickerView *pickerView);
+
 @interface PickerView : UIView<UIPickerViewDelegate , UIPickerViewDataSource>
 
-@property (nonatomic, strong) UIView *toolBar;
-@property (nonatomic, strong) UIPickerView *pickerView;
+@property (nonatomic, copy) PickerViewBlock  pickerViewBlock;
 
-@property (nonatomic , retain) UIDatePicker * datePickerView;
-@property (nonatomic , assign) id <PickerViewDelegare> delegate;
-@property (nonatomic , assign) UIDatePickerMode pickerMode; // Time || Date 模式 如果没有，则赋值为-1
-@property (nonatomic , retain) NSArray * argArray;
-@property (nonatomic , retain) NSString * selectNum; // 保存非省名和地名的单条字符串
 
-@property (nonatomic , retain) NSDictionary * dataSouceDict;// pickerView数据源
-@property (nonatomic , copy) NSString * dateString; // 保存 Time || Date
-@property (nonatomic , retain) NSDate * pickerDate; // 保存选择的时间或日期
-@property (nonatomic , assign) PickerType pickerType;
 
-//自定义频率选择器数据源
-@property (nonatomic, strong) NSDictionary *frequencyDictionary;
-@property (nonatomic ,strong) NSArray *frequencyArray;
-@property (nonatomic, copy) NSString *dateUnitString;
-@property (nonatomic, copy) NSString *dateRateString;
+@property (nonatomic, assign) id <PickerViewDelegare> delegate;
+@property (nonatomic, assign) UIDatePickerMode pickerMode; // Time || Date 模式 如果没有，则赋值为-1
+//@property (nonatomic , retain) NSArray * argArray;
+//@property (nonatomic , retain) NSString * selectNum; // 保存非省名和地名的单条字符串
+
+@property (nonatomic, strong) NSDictionary * dataSouceDict;// pickerView数据源
+@property (nonatomic, copy) NSString * dateString; // 保存 Time || Date
+@property (nonatomic, strong) NSDate * pickerDate; // 保存选择的时间或日期
+@property (nonatomic, assign) PickerType pickerType;
 
 //判断是否日期是否已经选择
 @property (nonatomic, assign) BOOL isCheckDate;
@@ -52,11 +49,15 @@ typedef enum
 @property (nonatomic, strong) NSDate * maxDate;     // 最大日期
 @property (nonatomic, strong) NSDate * minDate;     // 最小日期
 
+@property (nonatomic, copy) NSString *dateUnitString;
+@property (nonatomic, copy) NSString *dateRateString;
+
 // minuteInterval
 @property (nonatomic, assign) NSInteger minuteInterval;
 
 - (void)show;
 - (void)remove;
+
 @end
 
 @protocol PickerViewDelegare <NSObject>

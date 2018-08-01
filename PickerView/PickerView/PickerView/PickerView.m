@@ -19,16 +19,33 @@
 // 设置颜色
 #define Color(r,g,b) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:1.0]
 @interface PickerView ()
+
+@property (nonatomic, strong) UIView *toolBar;
+@property (nonatomic, strong) UIImageView *toolbarBackgroundView;
+@property (nonatomic, strong) UIButton *cancelButton;
+@property (nonatomic, strong) UIButton *sureButton;
+
+@property (nonatomic, strong) UIDatePicker *datePickerView; // 时间日期选择器
+@property (nonatomic, strong) UIPickerView *pickerView;     // 自定义选择器
+
+
+// 自定义频率选择器数据源
+@property (nonatomic, strong) NSDictionary *frequencyDictionary;
+@property (nonatomic ,strong) NSArray *frequencyArray;
+@property (nonatomic ,strong) NSArray *rangeArray;
+
+// 自定义日期+AM选择器数据源
 @property (nonatomic, strong) NSMutableArray *arrayYears;
 @property (nonatomic, strong) NSMutableArray *arrayMonths;
 @property (nonatomic, strong) NSMutableArray *arrayDays;
 @property (nonatomic, strong) NSArray *meridiemArray;
-@property (copy, nonatomic) NSString *strYear;      //  年
-@property (copy, nonatomic) NSString *strMonth;     //  月
-@property (copy, nonatomic) NSString *strDay;       //  日
+@property (nonatomic, copy) NSString *strYear;      //  年
+@property (nonatomic, copy) NSString *strMonth;     //  月
+@property (nonatomic, copy) NSString *strDay;       //  日
 @property (nonatomic, copy) NSString *strMeridiem;  // AM/PM
-@property (strong, nonatomic) NSDateFormatter *dateFormatter;
+@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, copy) NSString *dateAndMeridiemString;  // 处理后回传的 日期+AM/PM
+
 @end
 
 @implementation PickerView
@@ -50,6 +67,7 @@
     }
     return self;
 }
+
 - (void)assignTheNecessaryValue
 {
     NSDateFormatter  *dateformatter=[[NSDateFormatter alloc] init];
@@ -112,18 +130,6 @@
 {
     [self assignTheNecessaryValue];
     [self createToolbar];
-    if (_pickerMode < 0) {
-        [self createPickerView];
-        [self addSubview:_pickerView];
-    } else if (_pickerType == PickerType_DateAndMeridiem) {
-        // 日期 + AM/PM
-        [self createPickerView];
-        [self addSubview:_pickerView];
-    } else{
-        [self creatDatePickerView];
-        [self addSubview:_datePickerView];
-    }
-    [self addSubview:_toolBar];
     
     __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.25 animations:^{
@@ -173,6 +179,7 @@
         NSString *path = [[NSBundle mainBundle] pathForResource:@"frequency" ofType:@"plist"];
         self.frequencyDictionary = [[NSDictionary alloc] initWithContentsOfFile:path];
         self.frequencyArray = @[@"永不",@"每天",@"每周",@"每月",@"每年"];
+        self.rangeArray = [self.frequencyDictionary objectForKey:[self.frequencyArray objectAtIndex:0]];
         
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         //日期 + AM/PM
@@ -229,51 +236,45 @@
 
 - (void)creatDatePickerView
 {
-    _datePickerView = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, _toolBar.frame.origin.y + _toolBar.frame.size.height, ScreenWidth, 280)];
-     [_datePickerView   setTimeZone:[NSTimeZone defaultTimeZone]];
-    _datePickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
-    
-    // 设置 UIDatePicker 的 minuteInterval
-    if (_pickerMode == UIDatePickerModeDateAndTime && _minuteInterval == 10) {
-        _datePickerView.minuteInterval = 10;
-    }
-    
-    //滚动datePicker到指定日期,self.CheckDate 可能为空,为空时会崩溃
-    if (self.isCheckDate == YES && self.CheckDate) {
-        NSLog(@"ddd");
-        [_datePickerView setDate:self.CheckDate animated:YES];
-    }
-    _datePickerView.datePickerMode = self.pickerMode;
-    _datePickerView.backgroundColor = [UIColor whiteColor];
-    NSLog(@"pickerMode == %ld",(long)_datePickerView.datePickerMode);
-    
-    [_datePickerView setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];
-    [_datePickerView addTarget:self action:@selector(dateChanged:) forControlEvents:UIControlEventValueChanged];
+//    _datePickerView = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, _toolBar.frame.origin.y + _toolBar.frame.size.height, ScreenWidth, 280)];
+//     [_datePickerView   setTimeZone:[NSTimeZone defaultTimeZone]];
+//    _datePickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+//
+//    // 设置 UIDatePicker 的 minuteInterval
+//    if (_pickerMode == UIDatePickerModeDateAndTime && _minuteInterval == 10) {
+//        _datePickerView.minuteInterval = 10;
+//    }
+//
+//    //滚动datePicker到指定日期,self.CheckDate 可能为空,为空时会崩溃
+//    if (self.isCheckDate == YES && self.CheckDate) {
+//        NSLog(@"ddd");
+//        [_datePickerView setDate:self.CheckDate animated:YES];
+//    }
+//    _datePickerView.datePickerMode = self.pickerMode;
+//    _datePickerView.backgroundColor = [UIColor whiteColor];
+//    NSLog(@"pickerMode == %ld",(long)_datePickerView.datePickerMode);
+//
+//    [_datePickerView setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];
+//    [_datePickerView addTarget:self action:@selector(dateChanged:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)createToolbar
 {
-    _toolBar = [[UIView alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, 60)];
+    [self addSubview:self.toolBar];
+    [_toolBar addSubview:self.toolbarBackgroundView];
+    [_toolBar addSubview:self.cancelButton];
+    [_toolBar addSubview:self.sureButton];
     
-    UIImageView * toolbarBackgroundView = [[UIImageView alloc] initWithFrame:_toolBar.bounds];
-    toolbarBackgroundView.image = [UIImage imageNamed:@"toolbar"];
-    [_toolBar addSubview:toolbarBackgroundView];
-    
-    UIButton * cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    cancelButton.frame = CGRectMake(0, 7, 68, 60-7);
-    [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
-    [cancelButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    cancelButton.titleLabel.font = [UIFont systemFontOfSize:18];
-    [cancelButton addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
-    [_toolBar addSubview:cancelButton];
-    
-    UIButton * doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    doneButton.frame = CGRectMake(ScreenWidth - 68, 7, 68, 60-7);
-    [doneButton setTitle:@"确定" forState:UIControlStateNormal];
-    [doneButton setTitleColor:Color(0, 119, 255) forState:UIControlStateNormal];
-    doneButton.titleLabel.font = [UIFont systemFontOfSize:18];
-    [doneButton addTarget:self action:@selector(makeSureAction) forControlEvents:UIControlEventTouchUpInside];
-    [_toolBar addSubview:doneButton];
+    if (_pickerMode < 0) {
+        [self createPickerView];
+        [self addSubview:self.pickerView];
+    } else if (_pickerType == PickerType_DateAndMeridiem) {
+        // 日期 + AM/PM
+        [self createPickerView];
+        [self addSubview:self.pickerView];
+    } else{
+        [self addSubview:self.datePickerView];
+    }
 }
 
 #pragma mark UIPickerViewDataSource 处理方法
@@ -282,7 +283,7 @@
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView*)pickerView
 {
     if (self.pickerType == PickerType_frequency) {
-        return 1;
+        return 2;
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         return 4;
@@ -294,7 +295,11 @@
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
     if (self.pickerType == PickerType_frequency) {
-        return [self.frequencyArray count];
+        if (component == 0) {
+            return [self.frequencyArray count];
+        }else{
+            return [self.rangeArray count];
+        }
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -315,7 +320,11 @@
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
     
     if (_pickerType == PickerType_frequency) {
-        return [self.frequencyArray objectAtIndex:row];
+        if (component == 0) {
+            return [self.frequencyArray objectAtIndex:row];
+        }else{
+            return [self.rangeArray objectAtIndex:row];
+        }
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -335,8 +344,12 @@
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
     if (self.pickerType == PickerType_frequency) {
-        [pickerView reloadComponent:0];
+        if (component == 0) {
+            self.rangeArray = [self.frequencyDictionary objectForKey:[self.frequencyArray objectAtIndex:row]];
+        }
+        [pickerView reloadComponent:1];
         self.dateUnitString = [NSString stringWithFormat:@"%ld",(long)[_pickerView selectedRowInComponent:0] ];
+        self.dateRateString = [NSString stringWithFormat:@"%ld",(long)[_pickerView selectedRowInComponent:1] ];
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         if (component == 0) {
@@ -361,7 +374,6 @@
 - (void)dateChanged:(UIDatePicker *)datePicker
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    
     
     if (_pickerMode == UIDatePickerModeTime) {
         [dateFormatter setDateFormat:@"HH:mm"];
@@ -406,11 +418,9 @@
     } else if (_pickerType == PickerType_DateAndMeridiem) {
         // 日期 + AM/PM
         paramStr = [_dateAndMeridiemString stringByReplacingOccurrencesOfString:@"- " withString:@"-0"];
-    }
-    else{
+    } else {
         paramStr = _dateString;
     }
-    
     [_delegate callbackForConfirmWithParamStr:self Param:paramStr];
     
     [self remove];
@@ -422,6 +432,83 @@
 }
 
 #pragma mark - Lazy
+//- (UIPickerView *)pickerView{
+//    if (!_pickerView) {
+//        _pickerView = [[UIPickerView alloc] initWithFrame:CGRectMake(0, _toolBar.frame.origin.y + _toolBar.frame.size.height, ScreenWidth, 280)];
+//        _pickerView.backgroundColor = [UIColor whiteColor];
+//        _pickerView.delegate = self;
+//        _pickerView.dataSource = self;
+//        _pickerView.showsSelectionIndicator = YES;
+//    }
+//    return _pickerView;
+//}
+
+- (UIDatePicker *)datePickerView{
+    //             weakSelf.datePickerView.frame = CGRectMake(0, ScreenHeight - 280, ScreenWidth, 280);
+    if (!_datePickerView) {
+        _datePickerView = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, _toolBar.frame.origin.y + _toolBar.frame.size.height, ScreenWidth, 280)];
+        [_datePickerView  setTimeZone:[NSTimeZone defaultTimeZone]];
+        _datePickerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
+        
+        // 设置 UIDatePicker 的 minuteInterval
+        if (_pickerMode == UIDatePickerModeDateAndTime && _minuteInterval == 10) {
+            _datePickerView.minuteInterval = 10;
+        }
+        
+        //滚动datePicker到指定日期,self.CheckDate 可能为空,为空时会崩溃
+        if (self.isCheckDate == YES && self.CheckDate) {
+            NSLog(@"ddd");
+            [_datePickerView setDate:self.CheckDate animated:YES];
+        }
+        _datePickerView.datePickerMode = self.pickerMode;
+        _datePickerView.backgroundColor = [UIColor whiteColor];
+        //NSLog(@"pickerMode == %ld",(long)_datePickerView.datePickerMode);
+        
+        [_datePickerView setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"zh_CN"]];
+        [_datePickerView addTarget:self action:@selector(dateChanged:) forControlEvents:UIControlEventValueChanged];
+    }
+    return _datePickerView;
+}
+
+- (UIView *)toolBar{
+    if (!_toolBar) {
+        _toolBar = [[UIView alloc] initWithFrame:CGRectMake(0, ScreenHeight, ScreenWidth, 60)];
+    }
+    return _toolBar;
+}
+
+- (UIImageView *)toolbarBackgroundView {
+    if (!_toolbarBackgroundView) {
+        _toolbarBackgroundView = [[UIImageView alloc] initWithFrame:_toolBar.bounds];
+        _toolbarBackgroundView.image = [UIImage imageNamed:@"toolbar"];
+    }
+    return _toolbarBackgroundView;
+}
+
+- (UIButton *)cancelButton{
+    if (!_cancelButton) {
+        _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _cancelButton.frame = CGRectMake(0, 0, 68, 60);
+        [_cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        [_cancelButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        _cancelButton.titleLabel.font = [UIFont systemFontOfSize:18];
+        [_cancelButton addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _cancelButton;
+}
+
+- (UIButton *)sureButton{
+    if (!_sureButton) {
+        _sureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        _sureButton.frame = CGRectMake(ScreenWidth - 68, 0, 68, 60);
+        [_sureButton setTitle:@"确定" forState:UIControlStateNormal];
+        [_sureButton setTitleColor:Color(0, 119, 255) forState:UIControlStateNormal];
+        _sureButton.titleLabel.font = [UIFont systemFontOfSize:18];
+        [_sureButton addTarget:self action:@selector(makeSureAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _sureButton;
+}
+
 - (NSMutableArray *)arrayYears{
     if (!_arrayYears) {
         _arrayYears = [NSMutableArray array];
