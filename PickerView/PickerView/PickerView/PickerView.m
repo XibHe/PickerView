@@ -364,7 +364,21 @@
         [self updateLabelText];
         
         if (component != 2 && component != 3) {
+            
+            // 去除时间字符串格式中的汉字
+            self.strYear = [self.strYear stringByReplacingOccurrencesOfString:@"年" withString:@""];
+            self.strMonth = [self.strMonth stringByReplacingOccurrencesOfString:@"月" withString:@""];
+            if ([self.strMonth integerValue] < 10) {
+                if ([self.strMonth containsString:@"0"]) {
+                    // 不进行操作
+                } else {
+                  self.strMonth = [NSString stringWithFormat:@"0%@",self.strMonth];
+                }
+            }
+            
             NSString *strDate = [NSString stringWithFormat:@"%@%@", self.strYear, self.strMonth];
+            strDate = [strDate stringByReplacingOccurrencesOfString:@" " withString:@""];
+        
             [self upDateCurrentAllDaysWithDate:[self.dateFormatter dateFromString:strDate]];
         }
     }
@@ -550,7 +564,7 @@
     
     NSInteger allDays = [self totaldaysInMonth:currentDate];
     for (int i = 1; i <= allDays; i++) {
-        NSString *strDay = [NSString stringWithFormat:@"%02i", i];
+        NSString *strDay = [NSString stringWithFormat:@"%2i日", i];
         [self.arrayDays addObject:strDay];
     }
     
